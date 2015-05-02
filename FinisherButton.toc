@@ -1,0 +1,15 @@
+## Interface: 60000
+## Title: Finisher Button
+## Notes: Provides optimal move suggestions via action bars
+## OptionalDeps: LibStub, CallbackHandler-1.0, LibRangeCheck-2.0
+## SavedVariablesPerCharacter: FinBtnDB
+
+libs\LibStub-1.0\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+
+FinBtnMain.lua
+FinBtnRogueCombat.lua
+FinBtnRogueSubtlety.lua
+FinBtnPriestShadow.lua
+FinisherButton.lua
