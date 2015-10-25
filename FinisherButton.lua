@@ -1,8 +1,5 @@
 FB = {}
 
-local SPELL = "spell"
-local PLAYER = "player"
-
 FB.UPDATE_INTERVAL = 0.1
 FB.ACTIONBAR = 1
 
@@ -16,15 +13,16 @@ local modules = {
 	}
 }
 
-local BTNS = {}
+local module;
+local mainModule = FinBtn.Main;
+
+local BUTTONS = {};
+local ACTIVE_BTNS = {}
 
 local SKILLS;
 local SKILL_ORDER;
 
-local module;
-
 local timeSinceUpdate;
-local actionBarOffset;
 
 local btnSize = 52
 
@@ -52,6 +50,51 @@ SlashCmdList["FINBTN"] = function(message)
 	end
 end
 
+local function createFrames(self)
+	-- Skill buttons
+	for i,k in ipairs(SKILL_ORDER) do
+		local frame = CreateFrame("Frame", "SkillButton_" .. i .. "_Frame", self);
+		frame:SetSize(btnSize, btnSize);
+		frame:SetPoint("LEFT", self, "LEFT", (btnSize * (i - 1)) + ((i - 1) * 4), 0);
+	
+		local btn = CreateFrame("CheckButton", "SkillButton_" .. i .. "_btn", frame, "ActionBarButtonTemplate");
+		btn:SetPoint("CENTER", 0, 0);
+		btn:SetSize(btnSize, btnSize);
+		
+		BUTTONS[i] = btn;		
+	end
+	
+	-- Frame movement button
+	FB.MoveBtn = CreateFrame("Button", "FB_MoveBtn", self);
+	FB.MoveBtn:SetSize(16,16);
+	FB.MoveBtn:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,4);
+	local moveFrameBg = FB.MoveBtn:CreateTexture("FBFrameBackground");
+	FBFrameBackground:SetTexture(64,64,64,0.5);
+	FBFrameBackground:SetAllPoints();
+	if (FinBtnDB["isLocked"]) then
+		FB.MoveBtn:SetAlpha(0);
+	else
+		FB.MoveBtn:SetAlpha(1);
+	end
+	FB.MoveBtn:RegisterForDrag("LeftButton");
+	FB.MoveBtn:SetScript("OnDragStart",FB.OnDragStart);
+	FB.MoveBtn:SetScript("OnDragStop",FB.OnDragStop);
+end
+
+local function setButtonSkills()
+	local actionBarOffset = (FB.ACTIONBAR - 1) * 12;
+	for i,k in ipairs(SKILL_ORDER) do
+		local _,spellid = GetSpellBookItemInfo(SKILLS[k][mainModule.SPELL]);
+		if (spellid == nil) then
+			spellid = SKILLS[k]["id"];
+		end
+		PickupSpell(spellid);
+		PlaceAction(i + actionBarOffset);
+		BUTTONS[i]:SetAttribute("action", i + actionBarOffset);
+		ACTIVE_BTNS[k] = BUTTONS[i];
+	end
+end
+
 function FB.OnLoad(self)
 	if (type(FinBtnDB) ~= "table") then
 		FinBtnDB = {}
@@ -62,7 +105,7 @@ function FB.OnLoad(self)
 end
 
 function FB.OnLogin(self)
-	local class, classFileName = UnitClass(PLAYER)
+	local class, classFileName = UnitClass(mainModule.PLAYER)
 	local curSpec = GetSpecialization()
 	
 	module = modules[classFileName][curSpec]
@@ -78,48 +121,15 @@ function FB.OnLogin(self)
 	self:SetPoint("BOTTOMLEFT", FinBtnDB["x"] - (length/2), FinBtnDB["y"] - (btnSize/2))
 
 	timeSinceUpdate = 0
-	actionBarOffset = (FB.ACTIONBAR - 1)*12
-	local size = 0
-	for i,k in ipairs(SKILL_ORDER) do
-		local frame = CreateFrame("Frame", k .. "_frame", self)
-		frame:SetSize(btnSize, btnSize)
-		frame:SetPoint("LEFT", self, "LEFT", (btnSize*(i-1)) + ((i-1) * 4), 0)
-		size = size + btnSize
 	
-		local btn = CreateFrame("CheckButton", k .. "_btn", frame, "ActionBarButtonTemplate")
-		btn:SetPoint("CENTER", 0, 0)
-		btn:SetSize(btnSize, btnSize)
-		
-		local _,spellid = GetSpellBookItemInfo(SKILLS[k][SPELL])
-		if (spellid == nil) then
-			spellid = SKILLS[k]["id"]
-		end
-		PickupSpell(spellid)
-		PlaceAction(i + actionBarOffset)
-		btn:SetAttribute("action",i + actionBarOffset)
-		BTNS[k] = btn		
-	end
-	
-	FB.MoveBtn = CreateFrame("Button", "FB_MoveBtn", self)
-	FB.MoveBtn:SetSize(16,16)
-	FB.MoveBtn:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,4)
-	local moveFrameBg = FB.MoveBtn:CreateTexture("FBFrameBackground")
-	FBFrameBackground:SetTexture(64,64,64,0.5)
-	FBFrameBackground:SetAllPoints()
-	if (FinBtnDB["isLocked"]) then
-		FB.MoveBtn:SetAlpha(0)
-	else
-		FB.MoveBtn:SetAlpha(1)
-	end
-	FB.MoveBtn:RegisterForDrag("LeftButton")
-	FB.MoveBtn:SetScript("OnDragStart",FB.OnDragStart)
-	FB.MoveBtn:SetScript("OnDragStop",FB.OnDragStop)
+	createFrames(self);
+	setButtonSkills();
 end
 
 function FB.OnUpdate(self, elapsed)
 	timeSinceUpdate = timeSinceUpdate + elapsed
 	while (timeSinceUpdate > FB.UPDATE_INTERVAL) do
-		module.EvaluateButtons(BTNS)
+		module.EvaluateButtons(ACTIVE_BTNS)
 		timeSinceUpdate = timeSinceUpdate - FB.UPDATE_INTERVAL
 	end
 end
@@ -127,12 +137,12 @@ end
 function FB.OnEvent(self, event, ...)
 	if (event == "ADDON_LOADED" and select(1, ...) == "FinisherButton") then
 		FB.OnLoad(self);	
-	elseif (event == "PLAYER_ENTERING_WORLD" and not loaded) then
+	elseif ((event == "PLAYER_TALENT_UPDATE") or (event == "PLAYER_ENTERING_WORLD" and not loaded)) then
 		FB.OnLogin(self);
 		loaded = true;
 	else
-		if not UnitAffectingCombat(PLAYER) then
-			for k,btn in pairs(BTNS) do
+		if not UnitAffectingCombat(mainModule.PLAYER) then
+			for k,btn in pairs(ACTIVE_BTNS) do
 				ActionButton_OnEvent(btn, event, ...)
 			end
 		end
@@ -162,6 +172,7 @@ mainFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 mainFrame:RegisterEvent("UPDATE_BINDINGS");
 mainFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM");
 mainFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+mainFrame:RegisterEvent("PLAYER_TALENT_UPDATE");
 mainFrame:RegisterEvent("ADDON_LOADED");
 mainFrame:SetScript("OnUpdate", FB.OnUpdate);
 mainFrame:SetScript("OnEvent", FB.OnEvent);

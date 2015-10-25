@@ -20,6 +20,7 @@ local VANISH = "Vanish"
 local SHADOW_DANCE = "Shadow Dance"
 local SHADOW_REFLECTION = "Shadow Reflection"
 local PREMEDITATION = "Premeditation"
+local MARKED_FOR_DEATH = "Marked for Death"
 
 local BS = "BS";
 local AM = "Am";
@@ -32,6 +33,7 @@ local VAN = "Van";
 local SD = "SD";
 local SR = "SR";
 local PRE = "Pre";
+local MFD = "MfD";
 
 module.SKILLS = {
 	[BS] = {
@@ -66,6 +68,9 @@ module.SKILLS = {
 	},	
 	[PRE] = {
 		[main.SPELL] = PREMEDITATION
+	},
+	[MFD] = {
+		[main.SPELL] = MARKED_FOR_DEATH
 	}
 }
 
@@ -80,7 +85,8 @@ module.SKILL_ORDER = {
 	PRE,
 	VAN,
 	SD,
-	SR
+	SR,
+	MFD
 }
 
 local function EvaluateButtons(buttons)
@@ -89,10 +95,11 @@ local function EvaluateButtons(buttons)
 	local _,_,_,_,_,_,expiresShadowDance,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SHADOW_DANCE,nil,main.PLAYER_HELPFUL)
 	
 	local cp = UnitPower("player", 4);
-	local ant = select(4, UnitAura("player", "Anticipation", nil, "PLAYER|HELPFUL")) or 0;
+	-- local ant = select(4, UnitAura("player", "Anticipation", nil, "PLAYER|HELPFUL")) or 0;
 	
 	local cbBuildOnState;
-	if (cp + ant < 9) then
+	-- if (cp + ant < 9) then
+	if (cp < 4) then
 		cbBuildOnState = main.ON;
 	else
 		cbBuildOnState = main.HALF;
@@ -106,7 +113,8 @@ local function EvaluateButtons(buttons)
 	
 	local _,_,_,_,_,_,expiresHM,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,HEMORRHAGE,nil,main.PLAYER_HARMFUL)
 	local usableBs,lackEnBs = IsUsableSpell(module.SKILLS[BS][main.SPELL]);
-	if (expiresHM == nil or (expiresHM - GetTime()) < 7 or (not usableBs and not lackEnBs)) then
+	-- if (expiresHM == nil or (expiresHM - GetTime()) < 7 or (not usableBs and not lackEnBs)) then
+	if (not usableBs and not lackEnBs) then
 		buttons[HM]:SetAlpha(cbBuildOnState)
 		buttons[BS]:SetAlpha(main.OFF)
 	else
