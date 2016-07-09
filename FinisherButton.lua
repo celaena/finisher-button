@@ -66,7 +66,7 @@ local function createFrames(self)
 	FB.MoveBtn:SetSize(16,16);
 	FB.MoveBtn:SetPoint("BOTTOMLEFT",self,"TOPLEFT",0,4);
 	local moveFrameBg = FB.MoveBtn:CreateTexture("FBFrameBackground");
-	FBFrameBackground:SetTexture(64,64,64,0.5);
+	FBFrameBackground:SetColorTexture(64,64,64,0.5);
 	FBFrameBackground:SetAllPoints();
 	if (FinBtnDB["isLocked"]) then
 		FB.MoveBtn:SetAlpha(0);

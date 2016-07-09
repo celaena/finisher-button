@@ -9,7 +9,7 @@ libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 
 FinBtnMain.lua
-FinBtnRogueCombat.lua
+FinBtnRogueOutlaw.lua
 FinBtnRogueSubtlety.lua
 FinBtnPriestShadow.lua
 FinisherButton.lua
