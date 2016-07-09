@@ -1,60 +1,50 @@
 -------------------------------------------
 -- Subtlety Rogue Module --
 -------------------------------------------
-local module = {}
+local module = {};
 local moduleName = "RogueSubtlety";
 FinBtn[moduleName] = module;
 
-local main = FinBtn.Main
+local main = FinBtn.Main;
 
-local STEALTH = "Stealth"
-local SUBTERFUGE = "Subterfuge"
-local BACKSTAB = "Backstab"
-local AMBUSH = "Ambush"
-local HEMORRHAGE = "Hemorrhage"
-local SLICE_AND_DICE = "Slice and Dice"
-local RUPTURE = "Rupture"
-local EVISCERATE = "Eviscerate"
-local KICK = "Kick"
-local VANISH = "Vanish"
-local SHADOW_DANCE = "Shadow Dance"
-local SHADOW_REFLECTION = "Shadow Reflection"
-local PREMEDITATION = "Premeditation"
-local MARKED_FOR_DEATH = "Marked for Death"
+local BACKSTAB = "Backstab";
+local EVISCERATE = "Eviscerate";
+local KICK = "Kick";
+local NIGHTBLADE = "Nightblade";
+local SHADOW_BLADES = "Shadow Blades";
+local SHADOW_DANCE = "Shadow Dance";
+local SHADOWSTRIKE = "Shadowstrike";
+local SHURIKEN_STORM = "Shuriken Storm";
+local SHURIKEN_TOSS = "Shuriken Toss";
+local STEALTH = "Stealth";
+local SYMBOLS_OF_DEATH = "Symbols of Death";
+local VANISH = "Vanish";
+local SUBTERFUGE = "Subterfuge";
+local GLOOMBLADE = "Gloomblade";
+local ENVELOPING_SHADOWS = "Enveloping Shadows";
+local MARKED_FOR_DEATH = "Marked for Death";
+local DEATH_FROM_ABOVE = "Death from Above";
 
 local BS = "BS";
-local AM = "Am";
-local HM = "Hm";
-local SND = "SnD";
-local RUP = "Rup";
 local EV = "Ev";
 local KICK = "Kick";
-local VAN = "Van";
+local NB = "Nb";
+local SB = "SB";
 local SD = "SD";
-local SR = "SR";
-local PRE = "Pre";
+local SS = "Ss";
+local STR = "Str";
+local ST = "ST";
+local SOD = "SoD";
+local VAN = "Van";
+local GB = "Gb";
+local ES = "ES";
 local MFD = "MfD";
+local DFA = "DfA";
 
 module.SKILLS = {
 	[BS] = {
 		[main.TYPE] = main.SPELL,
 		[main.NAME] = BACKSTAB
-	},
-	[AM] = {
-		[main.TYPE] = main.SPELL,
-		[main.NAME] = AMBUSH
-	},
-	[HM] = {
-		[main.TYPE] = main.SPELL,
-		[main.NAME] = HEMORRHAGE
-	},
-	[SND] = {
-		[main.TYPE] = main.SPELL,
-		[main.NAME] = SLICE_AND_DICE
-	},
-	[RUP] = {
-		[main.TYPE] = main.SPELL,
-		[main.NAME] = RUPTURE
 	},
 	[EV] = {
 		[main.TYPE] = main.SPELL,
@@ -64,96 +54,102 @@ module.SKILLS = {
 		[main.TYPE] = main.SPELL,
 		[main.NAME] = KICK
 	},
-	[VAN] = {
+	[NB] = {
 		[main.TYPE] = main.SPELL,
-		[main.NAME] = VANISH
+		[main.NAME] = NIGHTBLADE
+	},
+	[SB] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHADOW_BLADES
 	},
 	[SD] = {
 		[main.TYPE] = main.SPELL,
 		[main.NAME] = SHADOW_DANCE
 	},
-	[SR] = {
+	[SS] = {
 		[main.TYPE] = main.SPELL,
-		[main.NAME] = SHADOW_REFLECTION
-	},	
-	[PRE] = {
+		[main.NAME] = SHADOWSTRIKE
+	},
+	[STR] = {
 		[main.TYPE] = main.SPELL,
-		[main.NAME] = PREMEDITATION
+		[main.NAME] = SHURIKEN_STORM
+	},
+	[ST] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHURIKEN_TOSS
+	},
+	[SOD] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SYMBOLS_OF_DEATH
+	},
+	[VAN] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = VANISH
+	},
+	[GB] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = GLOOMBLADE
+	},
+	[ES] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = ENVELOPING_SHADOWS
 	},
 	[MFD] = {
 		[main.TYPE] = main.SPELL,
 		[main.NAME] = MARKED_FOR_DEATH
+	},
+	[DFA] = {
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = DEATH_FROM_ABOVE
 	}
-}
+};
 
 module.SKILL_ORDER = {
+	SS,
 	BS,
-	AM,
-	HM,
-	SND,
-	RUP,
+	NB,
 	EV,
 	KICK,
-	PRE,
-	MFD,
+	SOD,
 	VAN,
 	SD,
-	SR
-}
+	SB,
+	STR
+};
 
 local function EvaluateButtons(buttons)
-	local _,_,_,_,_,_,expiresStealth,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,STEALTH,nil,main.PLAYER_HELPFUL)
-	local _,_,_,_,_,_,expiresSubterfuge,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SUBTERFUGE,nil,main.PLAYER_HELPFUL)
-	local _,_,_,_,_,_,expiresShadowDance,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SHADOW_DANCE,nil,main.PLAYER_HELPFUL)
+	local _,_,_,_,_,_,expiresStealth,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,STEALTH,nil,main.PLAYER_HELPFUL);
+	local _,_,_,_,_,_,expiresSubterfuge,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SUBTERFUGE,nil,main.PLAYER_HELPFUL);
+	local _,_,_,_,_,_,expiresShadowDance,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SHADOW_DANCE,nil,main.PLAYER_HELPFUL);
+	local _,_,_,_,_,_,expiresSoD,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SYMBOLS_OF_DEATH,nil,main.PLAYER_HELPFUL);
 	
 	local cp = UnitPower("player", 4);
-	-- local ant = select(4, UnitAura("player", "Anticipation", nil, "PLAYER|HELPFUL")) or 0;
-	
-	local cbBuildOnState;
-	-- if (cp + ant < 9) then
-	if (cp < 4) then
-		cbBuildOnState = main.ON;
-	else
-		cbBuildOnState = main.HALF;
-	end
+	local maxCP = UnitPowerMax("player", 4);
 	
 	if (expiresStealth == nil and expiresSubterfuge == nil and expiresShadowDance == nil) then
-		buttons[AM]:SetAlpha(main.OFF)
+		buttons[SS]:SetAlpha(main.OFF);
+		buttons[BS]:SetAlpha(main.ON);
 	else
-		buttons[AM]:SetAlpha(main.ON)
+		buttons[SS]:SetAlpha(main.ON);
+		buttons[BS]:SetAlpha(main.HALF);
 	end
 	
-	local _,_,_,_,_,_,expiresHM,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,HEMORRHAGE,nil,main.PLAYER_HARMFUL)
-	local usableBs,lackEnBs = IsUsableSpell(module.SKILLS[BS][main.NAME]);
-	-- if (expiresHM == nil or (expiresHM - GetTime()) < 7 or (not usableBs and not lackEnBs)) then
-	if (not usableBs and not lackEnBs) then
-		buttons[HM]:SetAlpha(cbBuildOnState)
-		buttons[BS]:SetAlpha(main.OFF)
+	if (expiresSoD == nil or (expiresSoD - GetTime()) < 10) then
+		buttons[SOD]:SetAlpha(main.ON)	
 	else
-		buttons[HM]:SetAlpha(main.OFF)
-		buttons[BS]:SetAlpha(cbBuildOnState)		
+		buttons[SOD]:SetAlpha(main.OFF)		
 	end
 
-	buttons[SND]:SetAlpha(main.OFF)
-	buttons[RUP]:SetAlpha(main.OFF)
+	buttons[NB]:SetAlpha(main.OFF)
 	buttons[EV]:SetAlpha(main.OFF)
-	local _,_,_,_,_,_,expiresSD,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SLICE_AND_DICE,nil,main.PLAYER_HELPFUL)
-	local _,_,_,_,_,_,expiresRup,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,RUPTURE,nil,main.PLAYER_HARMFUL)
-	if (expiresRup == nil or (expiresRup - GetTime()) < 7) then
-		buttons[RUP]:SetAlpha(main.ON)	
-	elseif (expiresSD == nil or (expiresSD - GetTime()) < 8) then
-		buttons[SND]:SetAlpha(main.ON)
+	local _,_,_,_,_,_,expiresNb,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,NIGHTBLADE,nil,main.PLAYER_HARMFUL);
+	if (expiresNb == nil or (expiresNb - GetTime()) < 4) then
+		buttons[NB]:SetAlpha(main.ON)	
 	else
 		buttons[EV]:SetAlpha(main.ON)		
 	end
 	
-	if (cp < 4) then
-		buttons[PRE]:SetAlpha(main.ON);
-	else
-		buttons[PRE]:SetAlpha(main.OFF);
-	end
-	
-	local _,_,_,_,_,_,_,_,interrupt = UnitCastingInfo(main.TARGET)
+	local _,_,_,_,_,_,_,_,interrupt = UnitCastingInfo(main.TARGET);
 	if (interrupt == null or interrupt) then
 		buttons[KICK]:SetAlpha(main.OFF)
 	else
