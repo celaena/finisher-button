@@ -38,41 +38,52 @@ local halo_max = 25;
 
 module.SKILLS = {
 	[MF] = {
-		[main.SPELL] = MIND_FLAY,
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = MIND_FLAY,
 		[main.ID] = 15407
 	},
 	[SWP] = {
-		[main.SPELL] = SHADOW_WORD_PAIN
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHADOW_WORD_PAIN
 	},
 	[VT] = {
-		[main.SPELL] = VAMPIRIC_TOUCH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = VAMPIRIC_TOUCH
 	},
 	[DP] = {
-		[main.SPELL] = DEVOURING_PLAGUE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = DEVOURING_PLAGUE
 	},
 	[MB] = {
-		[main.SPELL] = MIND_BLAST
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = MIND_BLAST
 	},
 	[SWD] = {
-		[main.SPELL] = SHADOW_WORD_DEATH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHADOW_WORD_DEATH
 	},
 	[SIL] = {
-		[main.SPELL] = SILENCE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SILENCE
 	},
 	[HALO] = {
-		[main.SPELL] = HALO,
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = HALO,
 		[main.ID] = 120644
 	},
 	[PI] = {
-		[main.SPELL] = POWER_INFUSION
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = POWER_INFUSION
 	},
 	[MI_BE] = {
-		[main.SPELL] = MINDBENDER,
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = MINDBENDER,
 		[main.ID] = 132603
 		-- [main.ID] = 123040
 	},
 	[MI_SP] = {
-		[main.SPELL] = MIND_SPIKE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = MIND_SPIKE
 	}
 }
 
@@ -134,12 +145,12 @@ end
 local function EvaluateButtons(buttons)
 	local shadowOrbCount = UnitPower(main.PLAYER, SPELL_POWER_SHADOW_ORBS)
 	
-	local _,gcdLeft,_ = GetSpellCooldown(module.SKILLS[MF][main.SPELL]);
-	local _,cdMB,_ = GetSpellCooldown(module.SKILLS[MB][main.SPELL]);
-	local _,cdSWD,_ = GetSpellCooldown(module.SKILLS[SWD][main.SPELL]);
-	local _,cdH,_ = GetSpellCooldown(module.SKILLS[HALO][main.SPELL]);
+	local _,gcdLeft,_ = GetSpellCooldown(module.SKILLS[MF][main.NAME]);
+	local _,cdMB,_ = GetSpellCooldown(module.SKILLS[MB][main.NAME]);
+	local _,cdSWD,_ = GetSpellCooldown(module.SKILLS[SWD][main.NAME]);
+	local _,cdH,_ = GetSpellCooldown(module.SKILLS[HALO][main.NAME]);
 	
-	local usableSWD,_ = IsUsableSpell(module.SKILLS[SWD][main.SPELL]);
+	local usableSWD,_ = IsUsableSpell(module.SKILLS[SWD][main.NAME]);
 	
 	local refreshDot = evaluateDots(buttons, shadowOrbCount);
 	

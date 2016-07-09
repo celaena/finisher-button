@@ -1,5 +1,5 @@
 -------------------------------------------
--- Combat Rogue Module --
+-- Subtlety Rogue Module --
 -------------------------------------------
 local module = {}
 local moduleName = "RogueSubtlety";
@@ -37,40 +37,52 @@ local MFD = "MfD";
 
 module.SKILLS = {
 	[BS] = {
-		[main.SPELL] = BACKSTAB
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = BACKSTAB
 	},
 	[AM] = {
-		[main.SPELL] = AMBUSH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = AMBUSH
 	},
 	[HM] = {
-		[main.SPELL] = HEMORRHAGE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = HEMORRHAGE
 	},
 	[SND] = {
-		[main.SPELL] = SLICE_AND_DICE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SLICE_AND_DICE
 	},
 	[RUP] = {
-		[main.SPELL] = RUPTURE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = RUPTURE
 	},
 	[EV] = {
-		[main.SPELL] = EVISCERATE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = EVISCERATE
 	},
 	[KICK] = {
-		[main.SPELL] = KICK
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = KICK
 	},
 	[VAN] = {
-		[main.SPELL] = VANISH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = VANISH
 	},
 	[SD] = {
-		[main.SPELL] = SHADOW_DANCE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHADOW_DANCE
 	},
 	[SR] = {
-		[main.SPELL] = SHADOW_REFLECTION
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SHADOW_REFLECTION
 	},	
 	[PRE] = {
-		[main.SPELL] = PREMEDITATION
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = PREMEDITATION
 	},
 	[MFD] = {
-		[main.SPELL] = MARKED_FOR_DEATH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = MARKED_FOR_DEATH
 	}
 }
 
@@ -83,10 +95,10 @@ module.SKILL_ORDER = {
 	EV,
 	KICK,
 	PRE,
+	MFD,
 	VAN,
 	SD,
-	SR,
-	MFD
+	SR
 }
 
 local function EvaluateButtons(buttons)
@@ -112,7 +124,7 @@ local function EvaluateButtons(buttons)
 	end
 	
 	local _,_,_,_,_,_,expiresHM,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,HEMORRHAGE,nil,main.PLAYER_HARMFUL)
-	local usableBs,lackEnBs = IsUsableSpell(module.SKILLS[BS][main.SPELL]);
+	local usableBs,lackEnBs = IsUsableSpell(module.SKILLS[BS][main.NAME]);
 	-- if (expiresHM == nil or (expiresHM - GetTime()) < 7 or (not usableBs and not lackEnBs)) then
 	if (not usableBs and not lackEnBs) then
 		buttons[HM]:SetAlpha(cbBuildOnState)

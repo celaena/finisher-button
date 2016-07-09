@@ -34,28 +34,25 @@ local mainFrame;
 -- Current options: lock, unlock
 SLASH_FINBTN1 = "/finbtn"
 SlashCmdList["FINBTN"] = function(message)
-	print("Finisher Button: "..message)
+	print("Finisher Button: " .. message);
 	if message == "lock" then
-		FB.MoveBtn:Disable()
-		FB.MoveBtn:SetAlpha(0)
-		FB.MoveBtn:EnableMouse(0)
-		FinBtnDB["isLocked"] = true
+		disableButton(FB.MoveBtn);
+		FinBtnDB["isLocked"] = true;
 	elseif message == "unlock" then
-		FB.MoveBtn:Enable()
-		FB.MoveBtn:SetAlpha(1)
-		FB.MoveBtn:EnableMouse(1)
-		FinBtnDB["isLocked"] = false
+		enableButton(FB.MoveBtn);
+		FinBtnDB["isLocked"] = false;
 	else
-		print("\tOptions: lock, unlock")
+		print("\tOptions: lock, unlock");
 	end
 end
 
 local function createFrames(self)
 	-- Skill buttons
-	for i,k in ipairs(SKILL_ORDER) do
+	for i = 1, 12 do
 		local frame = CreateFrame("Frame", "SkillButton_" .. i .. "_Frame", self);
 		frame:SetSize(btnSize, btnSize);
 		frame:SetPoint("LEFT", self, "LEFT", (btnSize * (i - 1)) + ((i - 1) * 4), 0);
+		frame:EnableMouse(false);
 	
 		local btn = CreateFrame("CheckButton", "SkillButton_" .. i .. "_btn", frame, "ActionBarButtonTemplate");
 		btn:SetPoint("CENTER", 0, 0);
@@ -81,18 +78,62 @@ local function createFrames(self)
 	FB.MoveBtn:SetScript("OnDragStop",FB.OnDragStop);
 end
 
+local function disableButton(btn)
+	btn:SetAlpha(0);
+	btn:Disable();		
+	btn:EnableMouse(false);		
+end
+
+local function enableButton(btn)
+	btn:SetAlpha(1);
+	btn:Enable();		
+	btn:EnableMouse(true);
+end
+
 local function setButtonSkills()
+	for z = 1, #BUTTONS do
+		disableButton(BUTTONS[z]);
+	end
 	local actionBarOffset = (FB.ACTIONBAR - 1) * 12;
 	for i,k in ipairs(SKILL_ORDER) do
-		local _,spellid = GetSpellBookItemInfo(SKILLS[k][mainModule.SPELL]);
-		if (spellid == nil) then
-			spellid = SKILLS[k]["id"];
-		end
-		PickupSpell(spellid);
+		local btnType = SKILLS[k][mainModule.TYPE];
+		if (mainModule.SPELL == btnType) then
+			local _,spellid = GetSpellBookItemInfo(SKILLS[k][mainModule.NAME]);
+			if (spellid == nil) then
+				spellid = SKILLS[k]["id"];
+			end
+			PickupSpell(spellid);
+		elseif (mainModule.MACRO == btnType) then
+			PickupMacro(SKILLS[k][mainModule.NAME]);
+		end		
 		PlaceAction(i + actionBarOffset);
 		BUTTONS[i]:SetAttribute("action", i + actionBarOffset);
+		enableButton(BUTTONS[i]);
 		ACTIVE_BTNS[k] = BUTTONS[i];
 	end
+end
+
+function resetState(self)
+	local class, classFileName = UnitClass(mainModule.PLAYER);
+	local curSpec = GetSpecialization();
+	
+	if (curSpec ~= nil and classFileName ~= nil) then
+		module = modules[classFileName][curSpec];	
+	end
+	if (module == nil) then
+		module = FinBtn.Main;
+	end
+	
+	SKILLS = module.SKILLS;
+	SKILL_ORDER = module.SKILL_ORDER;
+		
+	local length = (#SKILL_ORDER * btnSize) + ((#SKILL_ORDER - 1) * 4);
+	self:SetSize(length, btnSize);
+	self:SetPoint("BOTTOMLEFT", FinBtnDB["x"] - (length/2), FinBtnDB["y"] - (btnSize/2));
+
+	timeSinceUpdate = 0;
+	
+	setButtonSkills();
 end
 
 function FB.OnLoad(self)
@@ -105,25 +146,8 @@ function FB.OnLoad(self)
 end
 
 function FB.OnLogin(self)
-	local class, classFileName = UnitClass(mainModule.PLAYER)
-	local curSpec = GetSpecialization()
-	
-	module = modules[classFileName][curSpec]
-	if (module == nil) then
-		module = FinBtn.Main
-	end
-	
-	SKILLS = module.SKILLS
-	SKILL_ORDER = module.SKILL_ORDER
-		
-	local length = (#SKILL_ORDER * btnSize) + ((#SKILL_ORDER - 1) * 4)
-	self:SetSize(length, btnSize)
-	self:SetPoint("BOTTOMLEFT", FinBtnDB["x"] - (length/2), FinBtnDB["y"] - (btnSize/2))
-
-	timeSinceUpdate = 0
-	
 	createFrames(self);
-	setButtonSkills();
+	resetState(self);
 end
 
 function FB.OnUpdate(self, elapsed)
@@ -137,9 +161,11 @@ end
 function FB.OnEvent(self, event, ...)
 	if (event == "ADDON_LOADED" and select(1, ...) == "FinisherButton") then
 		FB.OnLoad(self);	
-	elseif ((event == "PLAYER_TALENT_UPDATE") or (event == "PLAYER_ENTERING_WORLD" and not loaded)) then
+	elseif (event == "PLAYER_ENTERING_WORLD" and not loaded) then
 		FB.OnLogin(self);
 		loaded = true;
+	elseif (event == "PLAYER_TALENT_UPDATE" and loaded) then
+		resetState(self);
 	else
 		if not UnitAffectingCombat(mainModule.PLAYER) then
 			for k,btn in pairs(ACTIVE_BTNS) do

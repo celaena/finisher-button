@@ -34,34 +34,44 @@ local ct_max = 10
 
 module.SKILLS = {
 	[SND] = {
-		[main.SPELL] = SLICE_AND_DICE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SLICE_AND_DICE
 	},
 	[EV] = {
-		[main.SPELL] = EVISCERATE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = EVISCERATE
 	},
 	[SIN] = {
-		[main.SPELL] = SINISTER_STRIKE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = SINISTER_STRIKE
 	},
 	[REV] = {
-		[main.SPELL] = REVEALING_STRIKE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = REVEALING_STRIKE
 	},
 	[KICK] = {
-		[main.SPELL] = KICK
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = KICK
 	},
 	[CT] = {
-		[main.SPELL] = CRIMSON_TEMPEST
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = CRIMSON_TEMPEST
 	},
 	[BF] = {
-		[main.SPELL] = BLADE_FLURRY
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = BLADE_FLURRY
 	},
 	[KS] = {
-		[main.SPELL] = KILLING_SPREE
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = KILLING_SPREE
 	},
 	[AD] = {
-		[main.SPELL] = ADRENALINE_RUSH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = ADRENALINE_RUSH
 	},
 	[VAN] = {
-		[main.SPELL] = VANISH
+		[main.TYPE] = main.SPELL,
+		[main.NAME] = VANISH
 	}
 }
 
@@ -79,6 +89,8 @@ module.SKILL_ORDER = {
 }
 
 local function EvaluateButtons(buttons)
+	local _,gcdLeft,_ = GetSpellCooldown(SINISTER_STRIKE);
+
 	local _,_,_,_,_,_,expiresSD,_,_,_,_,_,_,_,_,_ = UnitAura(main.PLAYER,SLICE_AND_DICE,nil,main.PLAYER_HELPFUL)
 	if (expiresSD == nil or (expiresSD - GetTime()) < 8) then
 		buttons[SND]:SetAlpha(main.ON)
@@ -89,7 +101,7 @@ local function EvaluateButtons(buttons)
 	end
 	
 	local _,_,_,_,_,_,expiresRS,_,_,_,_,_,_,_,_,_ = UnitAura(main.TARGET,REVEALING_STRIKE,nil,main.PLAYER_HARMFUL)
-	if (expiresRS ~= nil) then
+	if (expiresRS ~= nil and expiresRS > gcdLeft) then
 		buttons[SIN]:SetAlpha(main.ON)
 		buttons[REV]:SetAlpha(main.OFF)
 	else
@@ -104,15 +116,15 @@ local function EvaluateButtons(buttons)
 		buttons[KICK]:SetAlpha(main.ON)
 	end
 	
-	local ctSetting = main.OFF;
-	local bfSetting = main.OFF;
+	local ctSetting = main.HALF;
+	local bfSetting = main.HALF;
 	local minRange, maxRange = main.rc:GetRange(main.MOUSEOVER)
 	if (minRange and maxRange) then
 		if (ct_max <= minRange) then
 			-- Both off
 		elseif (bf_max <= minRange and ct_max >= maxRange) then
 			ctSetting = main.ON;
-			bfSetting = main.OFF;
+			bfSetting = main.HALF;
 		else
 			ctSetting = main.ON;
 			bfSetting = main.ON;
