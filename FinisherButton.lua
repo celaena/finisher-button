@@ -5,7 +5,7 @@ FB.ACTIONBAR = 1
 
 local modules = {
 	["ROGUE"] = {
-		[2] = FinBtn.RogueCombat,
+		[2] = FinBtn.RogueOutlaw,
 		[3] = FinBtn.RogueSubtlety
 	},
 	["PRIEST"] = {

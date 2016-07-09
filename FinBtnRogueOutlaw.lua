@@ -1,8 +1,8 @@
 -------------------------------------------
--- Combat Rogue Module --
+-- Outlaw Rogue Module --
 -------------------------------------------
 local module = {}
-local moduleName = "RogueCombat";
+local moduleName = "RogueOutlaw";
 FinBtn[moduleName] = module;
 
 local main = FinBtn.Main
