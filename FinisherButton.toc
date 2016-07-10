@@ -11,5 +11,6 @@ libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 FinBtnMain.lua
 FinBtnRogueOutlaw.lua
 FinBtnRogueSubtlety.lua
+FinBtnRogueAssassination.lua
 FinBtnPriestShadow.lua
 FinisherButton.lua
