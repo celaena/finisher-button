@@ -23,13 +23,25 @@ local ACTIVE_BTNS = {}
 local SKILLS;
 local SKILL_ORDER;
 
-local timeSinceUpdate;
+local timeSinceUpdate = 0;
 
 local btnSize = 52
 
 local loaded = false;
 
 local mainFrame;
+
+local function disableButton(btn)
+	btn:SetAlpha(0);
+	btn:Disable();		
+	btn:EnableMouse(false);		
+end
+
+local function enableButton(btn)
+	btn:SetAlpha(1);
+	btn:Enable();		
+	btn:EnableMouse(true);
+end
 
 -- Slash commands and options: activate via /finbtn
 -- Current options: lock, unlock
@@ -79,18 +91,6 @@ local function createFrames(self)
 	FB.MoveBtn:SetScript("OnDragStop",FB.OnDragStop);
 end
 
-local function disableButton(btn)
-	btn:SetAlpha(0);
-	btn:Disable();		
-	btn:EnableMouse(false);		
-end
-
-local function enableButton(btn)
-	btn:SetAlpha(1);
-	btn:Enable();		
-	btn:EnableMouse(true);
-end
-
 local function setButtonSkills()
 	for z = 1, #BUTTONS do
 		disableButton(BUTTONS[z]);
@@ -117,8 +117,7 @@ end
 function resetState(self)
 	local class, classFileName = UnitClass(mainModule.PLAYER);
 	local curSpec = GetSpecialization();
-	
-	if (curSpec ~= nil and classFileName ~= nil) then
+	if (curSpec ~= nil and classFileName ~= nil and modules[classFileName] ~= nil) then
 		module = modules[classFileName][curSpec];	
 	end
 	if (module == nil) then
